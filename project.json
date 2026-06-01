@@ -1,0 +1,13 @@
+{
+  "goal": "Build a CLI tool that calculates true freelancer profitability by analyzing income, expenses, and hours to determine effective hourly rate, tax estimates, and project margins.",
+  "acceptance_criteria": [
+    "User runs: python main.py --data data/transactions.csv",
+    "Tool reads CSV with columns: date, type, category, amount, hours, project",
+    "Tool calculates net profit, effective hourly rate (profit/hours), and tax estimate (25% of net)",
+    "Tool outputs a formatted table showing project-wise breakdown and overall summary",
+    "Tool handles missing columns gracefully with warnings and skips invalid rows"
+  ],
+  "meeting_budget": 5,
+  "meetings_held": 0,
+  "status": "active"
+}
