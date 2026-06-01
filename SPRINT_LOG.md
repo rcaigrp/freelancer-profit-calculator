@@ -76,3 +76,7 @@ Providing complete README.md and acceptance_tests.py. The previous README was tr
 ## Turn 12 — Manager (2026-06-01 12:03 UTC)
 
 Initialized Freelancer-Profit-Calculator project. Created project.json with active status and 5-meeting budget, README.md with clear business-focused setup/usage, and mandatory acceptance_tests.py to define the definition of done. Passing to Integrator for implementation.
+
+## Turn 13 — Integrator (2026-06-01 12:09 UTC)
+
+Implementing Freelancer-Profit-Calculator from scratch. Created project.json, README.md, main.py, acceptance_tests.py, and data/sample.csv. The tool reads CSV transactions, calculates gross/net profit, estimates taxes, and handles invalid rows gracefully. Tests verify parsing, calculation logic, and edge cases like negative net profit.

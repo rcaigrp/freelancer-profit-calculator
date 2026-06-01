@@ -1,30 +1,33 @@
 # Freelancer-Profit-Calculator
 
-A CLI tool that turns your raw transaction CSVs into clear profit reports, helping you understand your true take-home pay and avoid tax surprises.
-
-## What it does
-Calculates net profit, tracks expenses by category, and estimates tax liability from a simple CSV file. Designed for freelancers who already track income/expenses in spreadsheets.
+A simple Python CLI tool to calculate your net profit, estimated taxes, and take-home pay from a CSV of income and expenses.
 
 ## Installation
-No external dependencies required. Uses Python 3.11+ standard library only.
+No external dependencies required. Uses Python 3.11+ standard library (`csv`, `argparse`, `json`).
+
 ```bash
-# Clone or copy the project directory
+git clone <repo-url>
 cd Freelancer-Profit-Calculator
 ```
 
 ## Usage
-1. Prepare your CSV (`data/transactions.csv`) with columns: `date, description, amount, category`
-2. Run the calculator:
+Prepare a CSV file (`data/sample.csv`) with columns: `date,description,category,amount,type` (type is `income` or `expense`).
+
+Run the calculator:
 ```bash
-python main.py --input data/transactions.csv --tax-rate 25
+python main.py --input data/sample.csv
 ```
-3. View the summary in your terminal.
+
+To save a JSON report:
+```bash
+python main.py --input data/sample.csv --output report.json
+```
 
 ## Configuration
-- `--input`: Path to your transaction CSV file.
-- `--tax-rate`: Estimated tax percentage (default: 25).
-- `--output`: Path to save the detailed report (e.g., `report.csv`).
+- `--tax-rate`: Estimated tax percentage (default: 25%). Example: `--tax-rate 0.30` for 30%.
+- `--output`: Path to save JSON report. Omit to print to console.
 
 ## Troubleshooting
-- **CSV Format Error**: Ensure your CSV has exactly these headers: `date, description, amount, category`.
-- **Missing Data**: Rows with missing amounts are skipped with a warning.
+- **Missing columns**: Ensure your CSV has `date,description,category,amount,type` headers.
+- **Invalid amounts**: Rows with non-numeric amounts are skipped with a warning.
+- **Negative profit**: Tax is calculated as $0 if net profit is negative.
