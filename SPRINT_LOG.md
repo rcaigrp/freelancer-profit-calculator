@@ -48,3 +48,7 @@
 ## Turn 5 — Steward (2026-06-01 11:13 UTC)
 
 Enforced workspace hygiene by establishing the Human-Centric-Documentation-Onboarding project directory. Created project.json and README.md aligned with all user criteria and system constraints. Removed legacy 'Human-Centric-Documentation' folder to prevent confusion.
+
+## Turn 6 — Narrator (2026-06-01 11:20 UTC)
+
+Initialized Human-Centric-Documentation-Onboarding project. Created project.json with acceptance criteria focused on business-owner readability and cross-platform setup. Drafted a comprehensive README.md featuring a plain-English Quick Start, pip-based installation steps for Mac/Windows/Linux, clear usage examples with expected output, and a practical troubleshooting guide for common OCR pitfalls like blurry scans and low contrast.
