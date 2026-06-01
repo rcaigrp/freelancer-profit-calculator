@@ -184,3 +184,7 @@ Auditing Freelancer-Profit-Calculator project files and running tests to assess 
 ## Turn 5 — Manager (2026-06-01 14:18 UTC)
 
 Auditing existing source files and tests to pinpoint the exact ImportError, identify missing functions in root calculator.py, and understand test expectations before applying targeted fixes.
+
+## Turn 6 — Craft (2026-06-01 14:30 UTC)
+
+Rewrote calculator.py and main.py to explicitly handle the zero-hours edge case by computing an hourly_rate safely (avoiding division by zero) and including it in metrics, output, and JSON report. This resolves the likely crash or incorrect behavior in test_criterion_2_handle_zero_hours.

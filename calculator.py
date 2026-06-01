@@ -3,46 +3,45 @@ import os
 
 def parse_expenses(filepath):
     if not os.path.exists(filepath):
-        print(f"Error: File not found at {filepath}")
-        return []
+        return [], [], 0.0
         
+    incomes = []
     expenses = []
+    total_hours = 0.0
     try:
         with open(filepath, mode='r', newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
-            for i, row in enumerate(reader, start=2):
+            for row in reader:
                 try:
-                    amount = float(row['amount'])
-                    expenses.append({
-                        'date': row.get('date', ''),
-                        'description': row.get('description', ''),
-                        'amount': amount,
-                        'type': row.get('type', '')
-                    })
-                except (ValueError, KeyError) as e:
-                    print(f"Warning: Skipping row {i} due to parsing error ({e}): {row}")
+                    amount = float(row.get('amount', 0))
+                    hours = float(row.get('hours', 0))
+                    total_hours += hours
+                    if row.get('type', '').lower() == 'income':
+                        incomes.append({'amount': amount, 'hours': hours})
+                    else:
+                        expenses.append({'amount': amount, 'hours': hours})
+                except (ValueError, KeyError):
+                    continue
     except Exception as e:
-        print(f"Error reading file: {e}")
+        print(f"Error reading CSV: {e}")
         
-    return expenses
+    return incomes, expenses, total_hours
 
-def calculate_metrics(expenses, tax_rate, hours=None):
-    business_income = sum(e['amount'] for e in expenses if e['type'] == 'business_income')
-    business_expenses = sum(e['amount'] for e in expenses if e['type'] == 'business_expense')
-    personal_expenses = sum(e['amount'] for e in expenses if e['type'] == 'personal_expense')
+def calculate_metrics(incomes, expenses, tax_rate=25, total_hours=0.0):
+    total_income = sum(i['amount'] for i in incomes)
+    total_expenses = sum(e['amount'] for e in expenses)
+    taxable_income = total_income - total_expenses
+    tax_liability = max(0, taxable_income * (tax_rate / 100))
+    net_profit = taxable_income - tax_liability
     
-    taxable_income = business_income - business_expenses
-    tax_amount = taxable_income * tax_rate
-    net_profit = taxable_income - tax_amount
-    
-    effective_hourly = net_profit / hours if hours and hours > 0 else None
+    hourly_rate = net_profit / total_hours if total_hours > 0 else 0.0
     
     return {
-        'business_income': business_income,
-        'business_expenses': business_expenses,
-        'personal_expenses': personal_expenses,
+        'business_income': total_income,
+        'business_expenses': total_expenses,
+        'personal_expenses': 0.0,
         'taxable_income': taxable_income,
-        'tax_amount': tax_amount,
+        'tax_liability': tax_liability,
         'net_profit': net_profit,
-        'effective_hourly': effective_hourly
+        'hourly_rate': hourly_rate
     }
