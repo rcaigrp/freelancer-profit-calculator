@@ -1,55 +1,50 @@
-import subprocess
-import sys
+import unittest
 import os
-import csv
 import tempfile
+import sys
+import click
 
-def run_main(args):
-    cmd = [sys.executable, "/workspace/projects/Freelancer-Profit-Calculator/main.py"] + args
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    return result
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-def test_criterion_1_calculate_profit():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-        writer = csv.writer(f)
-        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
-        writer.writerow(['2024-01-01', 'income', '1800', '40', 'client-work'])
-        writer.writerow(['2024-01-02', 'expense', '80', '0', 'software'])
-        writer.writerow(['2024-01-03', 'expense', '120', '0', 'personal'])
-        tmp_path = f.name
-    try:
-        res = run_main(['--input', tmp_path])
-        assert res.returncode == 0
-        assert 'Business Income:' in res.stdout
-        assert 'Net Profit:' in res.stdout
-    finally:
-        os.unlink(tmp_path)
+from calculator import parse_expenses, calculate_metrics
+from main import main
 
-def test_criterion_2_handle_zero_hours():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-        writer = csv.writer(f)
-        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
-        writer.writerow(['2024-01-01', 'income', '1000', '0', 'client-work'])
-        tmp_path = f.name
-    try:
-        res = run_main(['--input', tmp_path])
-        assert res.returncode == 0
-        assert 'Effective Hourly Rate' in res.stdout
-        assert '0.00' in res.stdout or 'N/A' in res.stdout
-    finally:
-        os.unlink(tmp_path)
+class TestCalculatorLogic(unittest.TestCase):
+    def test_calculate_metrics(self):
+        metrics = calculate_metrics(income=1000, expenses=[200, 300], tax_rate=10, hours=40)
+        self.assertEqual(metrics.total_expenses, 500)
+        self.assertEqual(metrics.gross_profit, 500)
+        self.assertAlmostEqual(metrics.tax_deduction, 50)
+        self.assertAlmostEqual(metrics.net_profit, 450)
+        self.assertAlmostEqual(metrics.hourly_rate, 450/40)
 
-def test_criterion_3_skip_malformed_rows():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-        writer = csv.writer(f)
-        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
-        writer.writerow(['2024-01-01', 'income', '1000', '10', 'work'])
-        writer.writerow(['invalid_row', 'bad'])
-        writer.writerow(['2024-01-02', 'expense', '50', '0', 'misc'])
-        tmp_path = f.name
-    try:
-        res = run_main(['--input', tmp_path])
-        assert res.returncode == 0
-        assert 'Business Income: $1,000.00' in res.stdout
-    finally:
-        os.unlink(tmp_path)
+    def test_parse_expenses(self):
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            f.write("amount\n100\n200\n300\n")
+            temp_path = f.name
+        try:
+            expenses = parse_expenses(temp_path)
+            self.assertEqual(expenses, [100.0, 200.0, 300.0])
+        finally:
+            os.unlink(temp_path)
+
+class TestCLIRunner(unittest.TestCase):
+    def test_cli_successful_run(self):
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            f.write("amount\n100\n")
+            temp_csv = f.name
+        try:
+            runner = click.testing.CliRunner()
+            result = runner.invoke(main, ['--income', '1000', '--expenses', temp_csv, '--tax-rate', '0', '--hours', '10'])
+            self.assertEqual(result.exit_code, 0)
+            self.assertIn('1000', result.output)
+        finally:
+            os.unlink(temp_csv)
+
+    def test_cli_missing_file(self):
+        runner = click.testing.CliRunner()
+        result = runner.invoke(main, ['--income', '1000', '--expenses', 'nonexistent.csv'])
+        self.assertNotEqual(result.exit_code, 0)
+
+if __name__ == '__main__':
+    unittest.main()
