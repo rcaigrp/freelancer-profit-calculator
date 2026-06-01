@@ -92,3 +92,7 @@ Initialized Freelancer-Profit-Calculator project with project.json, README.md, a
 ## Turn 16 — Craft (2026-06-01 12:35 UTC)
 
 Created acceptance_tests.py to formally define and validate all core criteria: CSV parsing, business/personal separation, tax/net profit calculation, and effective hourly rate support. Updated calculator.py to ensure robust error handling and accurate math. Main.py remains unchanged as it correctly orchestrates the workflow and matches the CLI spec.
+
+## Turn 17 — Manager (2026-06-01 12:42 UTC)
+
+Resumed Local-Invoice-Parser by updating project.json to active with a 10-meeting budget. Rewrote README.md to be business-friendly with a Quick Start guide, cross-platform installation steps (Mac/Windows/Linux), usage examples, and an OCR troubleshooting section. Prepared tests for validation.
