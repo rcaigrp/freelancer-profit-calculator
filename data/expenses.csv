@@ -1,0 +1,6 @@
+date,description,amount,type
+2023-10-01,Web Design Project,1500.00,business_income
+2023-10-05,Hosting & Domain,50.00,business_expense
+2023-10-10,Groceries,120.00,personal_expense
+2023-10-15,Client Consultation,300.00,business_income
+2023-10-20,Software Subscription,29.99,business_expense

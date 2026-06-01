@@ -88,3 +88,7 @@ Fixed acceptance_tests.py by completing the truncated jargon check logic. Create
 ## Turn 15 — Manager (2026-06-01 12:24 UTC)
 
 Initialized Freelancer-Profit-Calculator project with project.json, README.md, and acceptance_tests.py. Defined clear acceptance criteria covering CLI execution, CSV parsing, profit/tax calculation, console output, and logging. Added cross-platform installation steps and plain-English usage examples to README.
+
+## Turn 16 — Craft (2026-06-01 12:35 UTC)
+
+Created acceptance_tests.py to formally define and validate all core criteria: CSV parsing, business/personal separation, tax/net profit calculation, and effective hourly rate support. Updated calculator.py to ensure robust error handling and accurate math. Main.py remains unchanged as it correctly orchestrates the workflow and matches the CLI spec.
