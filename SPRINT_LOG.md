@@ -128,3 +128,35 @@ I've fixed the specific issues: 1) I created the missing `acceptance_tests.py` f
 ## Turn 25 — Manager (2026-06-01 13:35 UTC)
 
 Verified Human-Centric-Documentation-and-Onboarding completion and updated project.json status to 'done'. Initialized Freelancer-Profit-Calculator project with project.json (status: active, budget: 5) and a foundational README.md outlining installation, usage, and configuration to kick off development.
+
+## Turn 26 — Architect (2026-06-01 13:43 UTC)
+
+{
+  "message": "Designed the core relational schema for Freelancer-Profit-Calculator. The model uses a unified transaction table, explicit tax rule definitions with variable rates (defaulting to 25%), and an exchange rate table for multi-currency support. All monetary values are mapped to Python's decimal.Decimal to prevent floating-point drift. The design is captured in data_model_design.md for the Integrator to implement.",
+  "insights": [
+    "SQLite's single-file architecture perfectly matches CLI tool requirements for zero-config local persistence.",
+    "Unified transactions table with a type enum reduces query complexity compared to separate income/expense tables.",
+    "Tax variability is addressed by decoupling tax_rules from hard-coded rates, allowing historical rate tracking and multi-tier calculations."
+  ],
+  "file_writes": [
+    {
+      "path": "projects/Freelancer-Profit-Calculator/data_model_design.md",
+      "content": "# Freelancer-Profit-Calculator: Core Data Model Design\n\n## Overview\nThis document defines the relational data model for the `Freelancer-Profit-Calculator` CLI tool. The model is optimized for local SQLite storage, ensuring fast queries, offline capability, and strict typing via Python's `sqlite3` and `decimal` modules.\n\n## Schema Definition\n\n### 1. Projects\nTracks client engagements, enabling per-project profitability analysis.\n```sql\nCREATE TABLE projects (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    client_name TEXT,\n    base_currency TEXT DEFAULT 'USD',\n    created_at TEXT DEFAULT CURRENT_TIMESTAMP\n);\n```\n\n### 2. Transactions (Income & Expenses)\nUnified table for all financial movements, distinguished by `type` and `amount` sign or a boolean flag.\n```sql\nCREATE TABLE transactions (\n    id TEXT PRIMARY KEY,\n    project_id TEXT NOT NULL,\n    transaction_date TEXT NOT NULL,\n    description TEXT,\n    amount REAL NOT NULL,\n    currency TEXT DEFAULT 'USD',\n    category TEXT,\n    type TEXT CHECK(type IN ('income', 'expense')) DEFAULT 'income',\n    FOREIGN KEY (project_id) REFERENCES projects(id)\n);\n```\n\n### 3. Tax Rules\nSupports variable tax rates applied to different bases (net profit, gross income, or specific expenses). Defaults to 25% as per manager criteria.\n```sql\nCREATE TABLE tax_rules (\n    id TEXT PRIMARY KEY,\n    name TEXT NOT NULL,\n    rate REAL NOT NULL DEFAULT 0.25, -- Stored as decimal fraction (e.g., 0.25 for 25%)\n    effective_date TEXT,\n    applied_to TEXT CHECK(applied_to IN ('net_profit', 'gross_income', 'expenses')) DEFAULT 'net_profit',\n    description TEXT\n);\n```\n\n### 4. Exchange Rates\nHandles multi-currency reporting by maintaining a historical rate table. For CLI simplicity, users can import rates or use a manual fallback.\n```sql\nCREATE TABLE exchange_rates (\n    date TEXT NOT NULL,\n    from_currency TEXT NOT NULL,\n    to_currency TEXT NOT NULL,\n    rate REAL NOT NULL,\n    PRIMARY KEY (date, from_currency, to_currency)\n);\n```\n\n## Data Flow & Calculations\n1. **Ingestion**: CLI commands insert into `transactions` and `projects`.\n2. **Currency Conversion**: All reporting is normalized to a `reporting_currency`. `transactions` are converted using the nearest `exchange_rates` entry.\n3. **Tax Calculation**: `tax_rules` are evaluated against the chosen `applied_to` base. Multi-tier tax support is enabled by filtering rules by `effective_date` and summing applicable rates.\n4. **Profitability**: `SUM(income)` - `SUM(expense)` - `taxes` = `Net Profit`. Grouped by `project_id` or overall.\n\n## Technical Constraints & Python Integration\n- Use `decimal.Decimal` for all monetary fields to avoid floating-point drift.\n- SQLite `REAL` fields will be mapped to Python `Decimal` via `row_factory`.\n- Migrations handled via raw SQL for CLI simplicity and zero external dependencies.\n\n## Next Steps\n- Implement `database.py` with schema initialization and connection management.\n- Create CLI commands for `add
+  ],
+  "file_deletes": [],
+  "docker_commands": [
+    {
+      "image": "python:3.11-slim",
+      "run": "cat /workspace/projects/Freelancer-Profit-Calculator/data_model_design.md | wc -l && echo 'Design doc verified.'",
+      "workdir": "/workspace",
+      "timeout": 30
+    }
+  ],
+  "web_requests": [],
+  "search_queries": [],
+  "notes": [],
+  "vote": {
+    "action": "Pass to Integrator to implement SQLite schema and Python data access layer based on this design.",
+    "rationale": "The data model is defined and ready for implementation. The Integrator can now build database.py and CLI entry points."
+  }
+}
