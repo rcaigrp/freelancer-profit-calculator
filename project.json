@@ -1,11 +1,11 @@
 {
-  "goal": "Build a Python CLI tool that helps freelancers calculate net profit, estimate taxes, and track expenses by importing CSV files of income and expenses, applying configurable tax rates, and generating a clear financial summary report.",
+  "goal": "Build a Python CLI tool that calculates net profit for freelancers by processing CSV transaction data, subtracting expenses, and estimating tax liability to prevent cash-flow crises.",
   "acceptance_criteria": [
-    "User runs: python src/main.py --income data/sample_incomes.csv --expenses data/sample_expenses.csv --tax-rate 0.25 --output report.json",
-    "Tool reads both CSVs, calculates total income, total expenses, and gross profit.",
-    "Tool applies the tax rate to gross profit to calculate net profit and tax liability.",
-    "Tool outputs a structured JSON/CSV summary including totals, tax breakdown, and net profit.",
-    "Tool handles missing columns gracefully (skips or warns), handles empty files, and logs all operations."
+    "CLI reads a CSV file containing transactions (date, description, amount, category) and calculates gross revenue, total expenses, and net profit.",
+    "Applies a configurable tax rate (default 25%) to estimate tax liability and displays the breakdown.",
+    "Outputs a formatted summary report to stdout with clear labels for business owners.",
+    "Writes the detailed report to an output file (CSV or JSON) if --output flag is provided.",
+    "Handles missing or invalid CSV columns gracefully with user-friendly error messages."
   ],
   "meeting_budget": 5,
   "meetings_held": 0,

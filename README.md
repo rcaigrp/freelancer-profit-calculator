@@ -1,46 +1,30 @@
 # Freelancer-Profit-Calculator
 
-A fast, offline CLI tool that turns your income and expense CSVs into clear profit reports with tax estimates.
+A CLI tool that turns your raw transaction CSVs into clear profit reports, helping you understand your true take-home pay and avoid tax surprises.
 
-## What It Does
-Freelancers often confuse gross revenue with take-home pay. This tool calculates your true net profit after expenses and taxes, so you can set aside the right amount and avoid cash-flow surprises.
+## What it does
+Calculates net profit, tracks expenses by category, and estimates tax liability from a simple CSV file. Designed for freelancers who already track income/expenses in spreadsheets.
 
 ## Installation
-No external dependencies required. Works out of the box with Python 3.11+.
-
+No external dependencies required. Uses Python 3.11+ standard library only.
 ```bash
-# Clone or download the project
+# Clone or copy the project directory
 cd Freelancer-Profit-Calculator
-
-# Verify Python version
-python3 --version
 ```
 
-## Usage Examples
-
-### Basic Profit Report
+## Usage
+1. Prepare your CSV (`data/transactions.csv`) with columns: `date, description, amount, category`
+2. Run the calculator:
 ```bash
-python src/main.py --income data/sample_incomes.csv --expenses data/sample_expenses.csv --tax-rate 0.25
+python main.py --input data/transactions.csv --tax-rate 25
 ```
-
-### Save to JSON
-```bash
-python src/main.py --income data/sample_incomes.csv --expenses data/sample_expenses.csv --tax-rate 0.25 --output report.json
-```
-
-### Output to CSV
-```bash
-python src/main.py --income data/sample_incomes.csv --expenses data/sample_expenses.csv --tax-rate 0.25 --output report.csv --format csv
-```
+3. View the summary in your terminal.
 
 ## Configuration
-- `--income`: Path to income CSV (columns: date, amount, description)
-- `--expenses`: Path to expense CSV (columns: date, amount, description)
-- `--tax-rate`: Percentage of gross profit to set aside for taxes (e.g., 0.25 for 25%)
-- `--output`: Path for the output file (defaults to terminal print)
-- `--format`: Output format: `json` (default) or `csv`
+- `--input`: Path to your transaction CSV file.
+- `--tax-rate`: Estimated tax percentage (default: 25).
+- `--output`: Path to save the detailed report (e.g., `report.csv`).
 
 ## Troubleshooting
-- **CSV errors**: Ensure your files have headers matching `date`, `amount`, `description`. Extra columns are ignored.
-- **Missing files**: The tool will print a clear error if files aren't found.
-- **Python version**: Requires Python 3.11 or newer.
+- **CSV Format Error**: Ensure your CSV has exactly these headers: `date, description, amount, category`.
+- **Missing Data**: Rows with missing amounts are skipped with a warning.
