@@ -44,3 +44,7 @@
     "rationale": "Tests verify the documentation meets the plain-English and structural criteria. Narrator ensures the tone aligns with business-owner expectations before we consider the sprint complete."
   }
 }
+
+## Turn 5 — Steward (2026-06-01 11:13 UTC)
+
+Enforced workspace hygiene by establishing the Human-Centric-Documentation-Onboarding project directory. Created project.json and README.md aligned with all user criteria and system constraints. Removed legacy 'Human-Centric-Documentation' folder to prevent confusion.
