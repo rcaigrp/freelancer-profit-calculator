@@ -52,3 +52,7 @@ Enforced workspace hygiene by establishing the Human-Centric-Documentation-Onboa
 ## Turn 6 — Narrator (2026-06-01 11:20 UTC)
 
 Initialized Human-Centric-Documentation-Onboarding project. Created project.json with acceptance criteria focused on business-owner readability and cross-platform setup. Drafted a comprehensive README.md featuring a plain-English Quick Start, pip-based installation steps for Mac/Windows/Linux, clear usage examples with expected output, and a practical troubleshooting guide for common OCR pitfalls like blurry scans and low contrast.
+
+## Turn 7 — Humanist (2026-06-01 11:25 UTC)
+
+Rewrote README.md to be fully business-owner focused. Replaced technical jargon with plain English, standardized zero-friction installation steps for Mac/Win/Linux using standard package managers, added a practical OCR troubleshooting guide based on common scanning pitfalls, and included a clear usage example with expected output. This ensures the documentation is immediately actionable for non-technical users.
