@@ -104,3 +104,7 @@ I identified that `acceptance_tests.py` was missing from the project directory b
 ## Turn 19 — Manager (2026-06-01 12:57 UTC)
 
 Initialized Freelancer-Profit-Calculator project with project.json, README.md, and acceptance_tests.py. README uses plain English, includes cross-platform setup, usage examples, and configuration flags. Tests cover profit calculation, zero-hour edge case, and malformed row handling.
+
+## Turn 20 — Manager (2026-06-01 13:03 UTC)
+
+Created the Human-Centric-Documentation-and-Onboarding project with project.json, README.md, and acceptance_tests.py. The README replaces technical jargon with plain English, includes cross-platform installation steps that auto-configure dependencies, provides a clear usage example with expected output, and features a practical troubleshooting guide for common OCR issues like blurry scans and low contrast. Acceptance tests verify the presence and structure of these required sections.
