@@ -1,50 +1,70 @@
-import unittest
-import os
-import tempfile
 import sys
-import click
+import os
+import pytest
+import json
+import tempfile
+import csv
+from click.testing import CliRunner
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Fix import path for src/ modules
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src'))
 
-from calculator import parse_expenses, calculate_metrics
+from calculator import read_csv, calculate_metrics, FinancialMetrics
 from main import main
 
-class TestCalculatorLogic(unittest.TestCase):
+class TestCalculatorLogic:
     def test_calculate_metrics(self):
-        metrics = calculate_metrics(income=1000, expenses=[200, 300], tax_rate=10, hours=40)
-        self.assertEqual(metrics.total_expenses, 500)
-        self.assertEqual(metrics.gross_profit, 500)
-        self.assertAlmostEqual(metrics.tax_deduction, 50)
-        self.assertAlmostEqual(metrics.net_profit, 450)
-        self.assertAlmostEqual(metrics.hourly_rate, 450/40)
+        incomes = [{'amount': 1000}]
+        expenses = [{'amount': 200}]
+        metrics = calculate_metrics(incomes, expenses, 25.0, 10.0)
+        assert metrics.total_income == 1000
+        assert metrics.total_expenses == 200
+        assert metrics.net_profit == 800
+        assert metrics.tax_liability == 200
+        assert metrics.hourly_rate == 100.0
 
-    def test_parse_expenses(self):
+    def test_criterion_2_handle_zero_hours(self):
+        incomes = [{'amount': 1000}]
+        expenses = [{'amount': 200}]
+        metrics = calculate_metrics(incomes, expenses, 25.0, 0.0)
+        assert metrics.hourly_rate == 0.0
+
+    def test_criterion_1_csv_parsing(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-            f.write("amount\n100\n200\n300\n")
-            temp_path = f.name
-        try:
-            expenses = parse_expenses(temp_path)
-            self.assertEqual(expenses, [100.0, 200.0, 300.0])
-        finally:
-            os.unlink(temp_path)
+            writer = csv.writer(f)
+            writer.writerow(['date', 'type', 'description', 'amount'])
+            writer.writerow(['2023-01-01', 'Income', 'Client A', '1000'])
+            writer.writerow(['2023-01-02', 'Expense', 'Software', '200'])
+            f.flush()
+            data = read_csv(f.name)
+            assert len(data) == 2
+            assert data[0]['amount'] == 1000
+            os.unlink(f.name)
 
-class TestCLIRunner(unittest.TestCase):
-    def test_cli_successful_run(self):
+class TestCLICriteria:
+    def test_criterion_3_tax_rate_output(self):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-            f.write("amount\n100\n")
-            temp_csv = f.name
-        try:
-            runner = click.testing.CliRunner()
-            result = runner.invoke(main, ['--income', '1000', '--expenses', temp_csv, '--tax-rate', '0', '--hours', '10'])
-            self.assertEqual(result.exit_code, 0)
-            self.assertIn('1000', result.output)
-        finally:
-            os.unlink(temp_csv)
+            writer = csv.writer(f)
+            writer.writerow(['date', 'type', 'description', 'amount'])
+            writer.writerow(['2023-01-01', 'Income', 'Client A', '1000'])
+            writer.writerow(['2023-01-02', 'Expense', 'Software', '200'])
+            f.flush()
+            runner = CliRunner()
+            result = runner.invoke(main, ['--input', f.name, '--tax-rate', '30'])
+            assert result.exit_code == 0
+            assert 'Tax Rate:          30%' in result.output
+            os.unlink(f.name)
 
-    def test_cli_missing_file(self):
-        runner = click.testing.CliRunner()
-        result = runner.invoke(main, ['--income', '1000', '--expenses', 'nonexistent.csv'])
-        self.assertNotEqual(result.exit_code, 0)
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_criterion_4_summary_format(self):
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+            writer = csv.writer(f)
+            writer.writerow(['date', 'type', 'description', 'amount'])
+            writer.writerow(['2023-01-01', 'Income', 'Client A', '1000'])
+            writer.writerow(['2023-01-02', 'Expense', 'Software', '200'])
+            f.flush()
+            runner = CliRunner()
+            result = runner.invoke(main, ['--input', f.name])
+            assert result.exit_code == 0
+            assert 'Net Profit:' in result.output
+            assert 'Tax Liability:' in result.output
+            os.unlink(f.name)

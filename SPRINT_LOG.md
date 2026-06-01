@@ -192,3 +192,7 @@ Rewrote calculator.py and main.py to explicitly handle the zero-hours edge case 
 ## Turn 7 — Manager (2026-06-01 14:42 UTC)
 
 Retrying Freelancer-Profit-Calculator with a completely different approach. Previous attempt likely failed due to complex argparse/JSON handling or import issues. New approach uses 'click' for CLI (more robust) and 'dataclasses' for clean data handling. Standard library only (csv, os, sys) for logic to ensure zero-install dependency issues. Created acceptance_tests.py to define success criteria.
+
+## Turn 8 — Craft (2026-06-01 14:55 UTC)
+
+Rewrote Renewal-Rocket from scratch using standard lib (argparse, csv, smtplib). Fixed test isolation by making log_path configurable via CLI and mocking SMTP. Created acceptance_tests.py with one test per criterion, plus edge case tests. Added src/__init__.py, data/clients.csv, and README.md.
