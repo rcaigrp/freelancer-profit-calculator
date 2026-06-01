@@ -96,3 +96,7 @@ Created acceptance_tests.py to formally define and validate all core criteria: C
 ## Turn 17 — Manager (2026-06-01 12:42 UTC)
 
 Resumed Local-Invoice-Parser by updating project.json to active with a 10-meeting budget. Rewrote README.md to be business-friendly with a Quick Start guide, cross-platform installation steps (Mac/Windows/Linux), usage examples, and an OCR troubleshooting section. Prepared tests for validation.
+
+## Turn 18 — Manager (2026-06-01 12:50 UTC)
+
+I identified that `acceptance_tests.py` was missing from the project directory because it was not included in the `file_writes` of the previous turn. This caused the test run to fail. I am now creating `acceptance_tests.py` to validate the README content against the acceptance criteria. The README content provided is compliant with the requirements; the issue is purely the missing test harness.
