@@ -1,33 +1,26 @@
 # Freelancer-Profit-Calculator
 
-A simple Python CLI tool to calculate your net profit, estimated taxes, and take-home pay from a CSV of income and expenses.
+## What the app does
+A CLI tool that calculates freelancer profit margins, effective hourly rates, and estimated tax liabilities based on CSV imports of revenue and expenses.
 
-## Installation
-No external dependencies required. Uses Python 3.11+ standard library (`csv`, `argparse`, `json`).
+## Installation/setup steps
+1. Ensure Python 3.11+ is installed.
+2. Clone or download the project.
+3. Install dependencies: `pip install -r requirements.txt` (uses only standard library modules: `csv`, `datetime`, `argparse`, `os`).
+4. Create a `data/` directory and place your `income_expenses.csv` file there.
 
+## Usage examples
+Calculate profit with a custom tax rate:
 ```bash
-git clone <repo-url>
-cd Freelancer-Profit-Calculator
+python main.py --data data/income_expenses.csv --tax-rate 0.30
 ```
-
-## Usage
-Prepare a CSV file (`data/sample.csv`) with columns: `date,description,category,amount,type` (type is `income` or `expense`).
-
-Run the calculator:
+View help:
 ```bash
-python main.py --input data/sample.csv
-```
-
-To save a JSON report:
-```bash
-python main.py --input data/sample.csv --output report.json
+python main.py --help
 ```
 
 ## Configuration
-- `--tax-rate`: Estimated tax percentage (default: 25%). Example: `--tax-rate 0.30` for 30%.
-- `--output`: Path to save JSON report. Omit to print to console.
-
-## Troubleshooting
-- **Missing columns**: Ensure your CSV has `date,description,category,amount,type` headers.
-- **Invalid amounts**: Rows with non-numeric amounts are skipped with a warning.
-- **Negative profit**: Tax is calculated as $0 if net profit is negative.
+- `--data`: Path to the CSV file containing transactions.
+- `--tax-rate`: Estimated tax rate (decimal, e.g., 0.25 for 25%). Defaults to 0.25.
+- `--hours`: Total billable hours worked (optional, calculates effective hourly rate).
+- `data/income_expenses.csv`: Expected columns: `date`, `type` (income/expense), `amount`, `description`.

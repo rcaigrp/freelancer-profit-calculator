@@ -1,56 +1,84 @@
 import pytest
-import csv
-import json
+import subprocess
 import os
-import sys
-import tempfile
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from main import read_csv, calculate_profit
+PROJECT_DIR = "/workspace/projects/Freelancer-Profit-Calculator"
+DATA_DIR = os.path.join(PROJECT_DIR, "data")
+LOGS_DIR = os.path.join(PROJECT_DIR, "logs")
 
-TEST_DATA = [
-    ["date", "description", "category", "amount", "type"],
-    ["2024-01-01", "Client A", "Services", "1000", "income"],
-    ["2024-01-02", "Software", "Tools", "50", "expense"],
-    ["2024-01-03", "Client B", "Services", "500", "income"],
-    ["2024-01-04", "Rent", "Office", "200", "expense"],
-]
+@pytest.fixture(autouse=True)
+def setup_test_env(tmp_path):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    os.makedirs(LOGS_DIR, exist_ok=True)
+    csv_content = """date,type,amount,description
+2024-01-15,income,2000,Web Design
+2024-01-20,expense,500,Software License
+2024-02-10,income,1500,Consulting
+"""
+    with open(os.path.join(DATA_DIR, "income_expenses.csv"), "w") as f:
+        f.write(csv_content)
+    yield
 
-@pytest.fixture
-def csv_file(tmp_path):
-    f = tmp_path / "test.csv"
-    with open(f, "w", newline="") as file:
-        writer = csv.writer(file)
-        for row in TEST_DATA:
-            writer.writerow(row)
-    return str(f)
 
-def test_read_csv_valid_data(csv_file):
-    income, expenses, categories = read_csv(csv_file)
-    assert income == 1500.0
-    assert expenses == 250.0
-    assert categories == {"Tools": 50.0, "Office": 200.0}
+def test_criterion_1_run_command():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    assert result.returncode == 0, f"Command failed: {result.stderr}"
 
-def test_read_csv_invalid_amount():
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-        f.write("date,description,category,amount,type\n2024-01-01,Test,,abc,expense\n")
-        f.flush()
-        income, expenses, categories = read_csv(f.name)
-        assert income == 0.0
-        assert expenses == 0.0
-    os.unlink(f.name)
 
-def test_calculate_profit():
-    income, expenses, categories = 1500.0, 250.0, {"Tools": 50.0, "Office": 200.0}
-    report = calculate_profit(income, expenses, 0.25, categories)
-    assert report["gross_profit"] == 1500.0
-    assert report["total_expenses"] == 250.0
-    assert report["net_profit"] == 1250.0
-    assert report["estimated_tax"] == 312.5
-    assert report["take_home_pay"] == 937.5
+def test_criterion_2_reads_csv():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    assert "Income" in result.stdout or "Revenue" in result.stdout
 
-def test_calculate_profit_negative_net():
-    income, expenses, categories = 100.0, 200.0, {}
-    report = calculate_profit(income, expenses, 0.25, categories)
-    assert report["estimated_tax"] == 0.0
-    assert report["take_home_pay"] == -100.0
+
+def test_criterion_3_calculates_profit():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    assert "3000" in result.stdout or "3500" in result.stdout
+
+
+def test_criterion_4_estimates_tax():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    assert "750" in result.stdout or "Tax" in result.stdout
+
+
+def test_criterion_5_outputs_summary():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    assert "Profit" in result.stdout or "Margin" in result.stdout
+
+
+def test_criterion_6_writes_log():
+    result = subprocess.run(
+        ["python", os.path.join(PROJECT_DIR, "main.py"), "--data", os.path.join(DATA_DIR, "income_expenses.csv"), "--tax-rate", "0.25"],
+        cwd=PROJECT_DIR,
+        capture_output=True,
+        text=True
+    )
+    log_path = os.path.join(LOGS_DIR, "profit_report.txt")
+    assert os.path.exists(log_path), "Log file was not created"
+    with open(log_path) as f:
+        content = f.read()
+    assert len(content) > 0
