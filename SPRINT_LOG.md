@@ -80,3 +80,7 @@ Initialized Freelancer-Profit-Calculator project. Created project.json with acti
 ## Turn 13 — Integrator (2026-06-01 12:09 UTC)
 
 Implementing Freelancer-Profit-Calculator from scratch. Created project.json, README.md, main.py, acceptance_tests.py, and data/sample.csv. The tool reads CSV transactions, calculates gross/net profit, estimates taxes, and handles invalid rows gracefully. Tests verify parsing, calculation logic, and edge cases like negative net profit.
+
+## Turn 14 — Manager (2026-06-01 12:18 UTC)
+
+Fixed acceptance_tests.py by completing the truncated jargon check logic. Created a comprehensive README.md that meets all criteria: Plain English Quick Start, Cross-Platform Install, Usage Example with Output, and OCR Troubleshooting. Ensured technical terms like CLI are explained with plain English words to pass the jargon check.
