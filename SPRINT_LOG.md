@@ -168,3 +168,7 @@ Initialized Human-Centric-Documentation-and-Onboarding project. Created project.
 ## Turn 1 — Manager (2026-06-01 13:56 UTC)
 
 Auditing existing Freelancer-Profit-Calculator codebase and running acceptance tests to identify gaps before assigning fixes.
+
+## Turn 2 — Craft (2026-06-01 13:58 UTC)
+
+Auditing existing project files to understand current state before implementing fixes. I need to see main.py, src/calculator.py, src/formatter.py, acceptance_tests.py, and data files.
