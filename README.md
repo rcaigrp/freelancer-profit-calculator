@@ -1,26 +1,36 @@
 # Freelancer-Profit-Calculator
 
 ## What the app does
-A CLI tool that calculates freelancer profit margins, effective hourly rates, and estimated tax liabilities based on CSV imports of revenue and expenses.
+A dependency-free Python CLI tool that calculates your business income, expenses, taxable income, tax amount, net profit, and effective hourly rate from a simple CSV file. Designed for freelancers to quickly understand their financial health without accounting software.
 
 ## Installation/setup steps
-1. Ensure Python 3.11+ is installed.
-2. Clone or download the project.
-3. Install dependencies: `pip install -r requirements.txt` (uses only standard library modules: `csv`, `datetime`, `argparse`, `os`).
-4. Create a `data/` directory and place your `income_expenses.csv` file there.
+No external packages are required. This tool uses only the Python standard library.
+1. Ensure Python 3.11+ is installed on your system.
+2. Clone this repository or download `main.py` and `data/expenses.csv`.
+3. No `pip install` needed. Ready to run immediately.
 
 ## Usage examples
-Calculate profit with a custom tax rate:
+Run the tool by pointing it to your CSV file:
 ```bash
-python main.py --data data/income_expenses.csv --tax-rate 0.30
+python main.py --input data/expenses.csv
 ```
-View help:
-```bash
-python main.py --help
+Expected output:
+```
+=============================================
+Freelancer Profit Calculator
+=============================================
+Business Income:      $1,800.00
+Business Expenses:    $79.99
+Personal Expenses:    $120.00
+---------------------------------------------
+Taxable Income:       $1,720.01
+Tax Amount:           $430.00
+Net Profit:           $1,290.01
+Effective Hourly Rate:$32.25
+=============================================
 ```
 
 ## Configuration
-- `--data`: Path to the CSV file containing transactions.
-- `--tax-rate`: Estimated tax rate (decimal, e.g., 0.25 for 25%). Defaults to 0.25.
-- `--hours`: Total billable hours worked (optional, calculates effective hourly rate).
-- `data/income_expenses.csv`: Expected columns: `date`, `type` (income/expense), `amount`, `description`.
+- `--input` (required): Path to your CSV file. Must contain columns: `date`, `type` (income/expense), `amount`, `hours`, `category`.
+- `--tax-rate` (optional): Override the default 25% tax rate. Example: `--tax-rate 30`
+- `--output` (optional): Save the report to a file instead of printing to terminal. Example: `--output report.txt`

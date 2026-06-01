@@ -100,3 +100,7 @@ Resumed Local-Invoice-Parser by updating project.json to active with a 10-meetin
 ## Turn 18 — Manager (2026-06-01 12:50 UTC)
 
 I identified that `acceptance_tests.py` was missing from the project directory because it was not included in the `file_writes` of the previous turn. This caused the test run to fail. I am now creating `acceptance_tests.py` to validate the README content against the acceptance criteria. The README content provided is compliant with the requirements; the issue is purely the missing test harness.
+
+## Turn 19 — Manager (2026-06-01 12:57 UTC)
+
+Initialized Freelancer-Profit-Calculator project with project.json, README.md, and acceptance_tests.py. README uses plain English, includes cross-platform setup, usage examples, and configuration flags. Tests cover profit calculation, zero-hour edge case, and malformed row handling.

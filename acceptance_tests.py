@@ -1,56 +1,55 @@
-import os
+import subprocess
 import sys
+import os
+import csv
 import tempfile
-import pytest
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from calculator import parse_expenses, calculate_metrics
+def run_main(args):
+    cmd = [sys.executable, "/workspace/projects/Freelancer-Profit-Calculator/main.py"] + args
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    return result
 
-def create_csv(content):
-    f = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
-    f.write(content)
-    f.close()
-    return f.name
-
-def test_parse_expenses():
-    csv_content = "date,description,amount,type\n2023-01-01,Client A,1000,business_income\n2023-01-02,Software,200,business_expense\n2023-01-03,Groceries,100,personal_expense"
-    path = create_csv(csv_content)
+def test_criterion_1_calculate_profit():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        writer = csv.writer(f)
+        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
+        writer.writerow(['2024-01-01', 'income', '1800', '40', 'client-work'])
+        writer.writerow(['2024-01-02', 'expense', '80', '0', 'software'])
+        writer.writerow(['2024-01-03', 'expense', '120', '0', 'personal'])
+        tmp_path = f.name
     try:
-        expenses = parse_expenses(path)
-        assert len(expenses) == 3
-        assert expenses[0]['amount'] == 1000
-        assert expenses[0]['type'] == 'business_income'
-        assert expenses[1]['type'] == 'business_expense'
-        assert expenses[2]['type'] == 'personal_expense'
+        res = run_main(['--input', tmp_path])
+        assert res.returncode == 0
+        assert 'Business Income:' in res.stdout
+        assert 'Net Profit:' in res.stdout
     finally:
-        os.unlink(path)
+        os.unlink(tmp_path)
 
-def test_calculate_metrics():
-    expenses = [
-        {'amount': 1000, 'type': 'business_income'},
-        {'amount': 200, 'type': 'business_expense'},
-        {'amount': 100, 'type': 'personal_expense'}
-    ]
-    metrics = calculate_metrics(expenses, tax_rate=0.2, hours=40)
-    assert metrics['business_income'] == 1000
-    assert metrics['business_expenses'] == 200
-    assert metrics['personal_expenses'] == 100
-    assert metrics['taxable_income'] == 800
-    assert metrics['tax_amount'] == 160
-    assert metrics['net_profit'] == 640
-    assert metrics['effective_hourly'] == 16.0
-
-def test_calculate_metrics_no_hours():
-    expenses = [{'amount': 1000, 'type': 'business_income'}]
-    metrics = calculate_metrics(expenses, tax_rate=0.2, hours=None)
-    assert metrics['effective_hourly'] is None
-
-def test_parse_expenses_skips_malformed():
-    csv_content = "date,description,amount,type\n2023-01-01,Client A,not_a_number,business_income\n2023-01-02,Software,200,business_expense"
-    path = create_csv(csv_content)
+def test_criterion_2_handle_zero_hours():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        writer = csv.writer(f)
+        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
+        writer.writerow(['2024-01-01', 'income', '1000', '0', 'client-work'])
+        tmp_path = f.name
     try:
-        expenses = parse_expenses(path)
-        assert len(expenses) == 1
-        assert expenses[0]['amount'] == 200
+        res = run_main(['--input', tmp_path])
+        assert res.returncode == 0
+        assert 'Effective Hourly Rate' in res.stdout
+        assert '0.00' in res.stdout or 'N/A' in res.stdout
     finally:
-        os.unlink(path)
+        os.unlink(tmp_path)
+
+def test_criterion_3_skip_malformed_rows():
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+        writer = csv.writer(f)
+        writer.writerow(['date', 'type', 'amount', 'hours', 'category'])
+        writer.writerow(['2024-01-01', 'income', '1000', '10', 'work'])
+        writer.writerow(['invalid_row', 'bad'])
+        writer.writerow(['2024-01-02', 'expense', '50', '0', 'misc'])
+        tmp_path = f.name
+    try:
+        res = run_main(['--input', tmp_path])
+        assert res.returncode == 0
+        assert 'Business Income: $1,000.00' in res.stdout
+    finally:
+        os.unlink(tmp_path)

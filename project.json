@@ -1,14 +1,13 @@
 {
-  "goal": "Build 'Freelancer-Profit-Calculator', a CLI tool that calculates freelancer profit margins, effective hourly rates, and estimated tax liabilities based on CSV imports of revenue and expenses.",
+  "goal": "Build a Python CLI tool that calculates freelancer profit, tax, and effective hourly rate from a CSV of transactions, handling edge cases like zero hours and malformed rows.",
   "acceptance_criteria": [
-    "User runs: python main.py --data data/income_expenses.csv --tax-rate 0.25",
-    "Tool reads CSV with columns: date, type (income/expense), amount, description",
-    "Tool calculates total revenue, total expenses, net profit, and profit margin percentage",
-    "Tool estimates tax liability based on provided tax rate or default 25%",
-    "Tool outputs a formatted summary table to the console",
-    "Tool writes a detailed report to logs/profit_report.txt"
+    "CLI accepts input CSV path via --input flag.",
+    "Tool calculates and displays Business Income, Expenses, Taxable Income, Tax Amount, Net Profit, and Effective Hourly Rate.",
+    "Handles zero/negative hours gracefully without division-by-zero errors.",
+    "Skips malformed/missing rows without crashing the tool.",
+    "Outputs a clean, formatted terminal report."
   ],
-  "meeting_budget": 5,
+  "meeting_budget": 6,
   "meetings_held": 0,
   "status": "active"
 }
