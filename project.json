@@ -7,6 +7,6 @@
     "Outputs a formatted summary report to stdout and optionally saves a CSV/JSON report."
   ],
   "meeting_budget": 5,
-  "meetings_held": 0,
+  "meetings_held": 1,
   "status": "active"
 }
